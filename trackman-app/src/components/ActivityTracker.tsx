@@ -1,44 +1,14 @@
 'use client'
 
 import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Card,
-  CardBody,
-  VStack,
-  HStack,
-  Button,
-  Input,
-  Select,
-  Textarea,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Badge,
-  IconButton,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalCloseButton,
-  useToast,
-  Flex,
-  Divider,
-} from '@chakra-ui/react'
-import { 
-  AddIcon, 
-  CalendarIcon, 
-  TimeIcon, 
-  LocationIcon,
-  EditIcon,
-  DeleteIcon
-} from '@chakra-ui/icons'
+  PlusIcon,
+  CalendarIcon,
+  ClockIcon,
+  MapPinIcon,
+  PencilIcon,
+  TrashIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
 
 interface Activity {
@@ -70,6 +40,7 @@ const categories = [
 export default function ActivityTracker() {
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -81,9 +52,6 @@ export default function ActivityTracker() {
     location: '',
     tags: ''
   })
-  
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const toast = useToast()
 
   // Mock data for now
   useEffect(() => {
@@ -131,7 +99,6 @@ export default function ActivityTracker() {
     setLoading(true)
 
     try {
-      // TODO: Replace with actual API call
       const newActivity: Activity = {
         id: Date.now().toString(),
         title: formData.title,
@@ -148,13 +115,6 @@ export default function ActivityTracker() {
 
       setActivities(prev => [newActivity, ...prev])
       
-      toast({
-        title: 'Activity added successfully',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      })
-
       // Reset form
       setFormData({
         title: '',
@@ -168,15 +128,9 @@ export default function ActivityTracker() {
         tags: ''
       })
       
-      onClose()
+      setIsModalOpen(false)
     } catch (error) {
-      toast({
-        title: 'Error adding activity',
-        description: 'Please try again',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      })
+      console.error('Error adding activity:', error)
     } finally {
       setLoading(false)
     }
@@ -184,12 +138,6 @@ export default function ActivityTracker() {
 
   const handleDelete = (id: string) => {
     setActivities(prev => prev.filter(activity => activity.id !== id))
-    toast({
-      title: 'Activity deleted',
-      status: 'info',
-      duration: 3000,
-      isClosable: true,
-    })
   }
 
   const formatDuration = (minutes: number) => {
@@ -201,292 +149,305 @@ export default function ActivityTracker() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'Work': 'blue',
-      'Exercise': 'green',
-      'Personal': 'purple',
-      'Learning': 'orange',
-      'Social': 'pink',
-      'Health': 'red',
-      'Hobbies': 'yellow',
-      'Travel': 'cyan',
-      'Other': 'gray'
+      'Work': 'bg-blue-100 text-blue-800',
+      'Exercise': 'bg-green-100 text-green-800',
+      'Personal': 'bg-purple-100 text-purple-800',
+      'Learning': 'bg-orange-100 text-orange-800',
+      'Social': 'bg-pink-100 text-pink-800',
+      'Health': 'bg-red-100 text-red-800',
+      'Hobbies': 'bg-yellow-100 text-yellow-800',
+      'Travel': 'bg-cyan-100 text-cyan-800',
+      'Other': 'bg-gray-100 text-gray-800'
     }
-    return colors[category] || 'gray'
+    return colors[category] || 'bg-gray-100 text-gray-800'
   }
 
   return (
-    <Box minH="100vh" bg="gray.50" py={8}>
-      <Container maxW="container.xl">
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <Flex justify="space-between" align="center" mb={8}>
-          <VStack align="start" spacing={2}>
-            <Heading size="xl" color="brand.500">
+        <div className="flex justify-between items-center mb-8">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-blue-600">
               Activity Tracker
-            </Heading>
-            <Text color="gray.600">
+            </h1>
+            <p className="text-gray-600">
               Track your daily activities and routines
-            </Text>
-          </VStack>
-          <Button 
-            leftIcon={<AddIcon />} 
-            colorScheme="brand" 
-            onClick={onOpen}
+            </p>
+          </div>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
+            <PlusIcon className="w-4 h-4 mr-2" />
             Add Activity
-          </Button>
-        </Flex>
+          </button>
+        </div>
 
         {/* Stats Overview */}
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={6} mb={8}>
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">Today's Activities</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="brand.500">
-                    {activities.filter(a => a.date === new Date().toISOString().split('T')[0]).length}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    {activities
-                      .filter(a => a.date === new Date().toISOString().split('T')[0])
-                      .reduce((sum, a) => sum + (a.duration_minutes || 0), 0)} minutes
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">Today's Activities</p>
+              <p className="text-2xl font-bold text-blue-500">
+                {activities.filter(a => a.date === new Date().toISOString().split('T')[0]).length}
+              </p>
+              <p className="text-sm text-gray-600">
+                {activities
+                  .filter(a => a.date === new Date().toISOString().split('T')[0])
+                  .reduce((sum, a) => sum + (a.duration_minutes || 0), 0)} minutes
+              </p>
+            </div>
+          </div>
           
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">This Week</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="green.500">
-                    {activities.length}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    {activities.reduce((sum, a) => sum + (a.duration_minutes || 0), 0)} minutes
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
+          <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">This Week</p>
+              <p className="text-2xl font-bold text-green-500">
+                {activities.length}
+              </p>
+              <p className="text-sm text-gray-600">
+                {activities.reduce((sum, a) => sum + (a.duration_minutes || 0), 0)} minutes
+              </p>
+            </div>
+          </div>
           
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">Categories</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="purple.500">
-                    {new Set(activities.map(a => a.category)).size}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    Different types
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
+          <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">Categories</p>
+              <p className="text-2xl font-bold text-purple-500">
+                {new Set(activities.map(a => a.category)).size}
+              </p>
+              <p className="text-sm text-gray-600">
+                Different types
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Activities List */}
-        <Card>
-          <CardBody>
-            <Heading size="md" mb={6}>Recent Activities</Heading>
-            <VStack spacing={4} align="stretch">
-              {activities.length === 0 ? (
-                <Text color="gray.500" textAlign="center" py={8}>
-                  No activities recorded yet. Add your first activity to get started!
-                </Text>
-              ) : (
-                activities.map((activity) => (
-                  <Box key={activity.id} p={4} border="1px" borderColor="gray.200" borderRadius="lg">
-                    <Flex justify="space-between" align="start" mb={2}>
-                      <VStack align="start" spacing={1} flex={1}>
-                        <HStack spacing={2}>
-                          <Text fontWeight="medium" fontSize="lg">{activity.title}</Text>
-                          <Badge colorScheme={getCategoryColor(activity.category)}>
-                            {activity.category}
-                          </Badge>
-                        </HStack>
-                        {activity.description && (
-                          <Text color="gray.600" fontSize="sm">{activity.description}</Text>
+        <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Recent Activities</h2>
+          <div className="space-y-4">
+            {activities.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                No activities recorded yet. Add your first activity to get started!
+              </p>
+            ) : (
+              activities.map((activity) => (
+                <div key={activity.id} className="p-4 border border-gray-200 rounded-lg">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-lg text-gray-900">{activity.title}</h3>
+                        <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(activity.category)}`}>
+                          {activity.category}
+                        </span>
+                      </div>
+                      {activity.description && (
+                        <p className="text-gray-600 text-sm">{activity.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <CalendarIcon className="w-4 h-4" />
+                          <span>{new Date(activity.date).toLocaleDateString()}</span>
+                        </div>
+                        {activity.time_start && (
+                          <div className="flex items-center gap-1">
+                            <ClockIcon className="w-4 h-4" />
+                            <span>{activity.time_start}</span>
+                          </div>
                         )}
-                        <HStack spacing={4} fontSize="sm" color="gray.500">
-                          <HStack spacing={1}>
-                            <CalendarIcon />
-                            <Text>{new Date(activity.date).toLocaleDateString()}</Text>
-                          </HStack>
-                          {activity.time_start && (
-                            <HStack spacing={1}>
-                              <TimeIcon />
-                              <Text>{activity.time_start}</Text>
-                            </HStack>
-                          )}
-                          {activity.duration_minutes && (
-                            <Text>{formatDuration(activity.duration_minutes)}</Text>
-                          )}
-                          {activity.location && (
-                            <HStack spacing={1}>
-                              <LocationIcon />
-                              <Text>{activity.location}</Text>
-                            </HStack>
-                          )}
-                        </HStack>
-                        {activity.tags && activity.tags.length > 0 && (
-                          <HStack spacing={1} mt={2}>
-                            {activity.tags.map((tag, index) => (
-                              <Badge key={index} variant="subtle" colorScheme="gray" size="sm">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </HStack>
+                        {activity.duration_minutes && (
+                          <span>{formatDuration(activity.duration_minutes)}</span>
                         )}
-                      </VStack>
-                      <HStack spacing={2}>
-                        <IconButton
-                          aria-label="Edit activity"
-                          icon={<EditIcon />}
-                          size="sm"
-                          variant="ghost"
-                        />
-                        <IconButton
-                          aria-label="Delete activity"
-                          icon={<DeleteIcon />}
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="red"
-                          onClick={() => handleDelete(activity.id)}
-                        />
-                      </HStack>
-                    </Flex>
-                  </Box>
-                ))
-              )}
-            </VStack>
-          </CardBody>
-        </Card>
+                        {activity.location && (
+                          <div className="flex items-center gap-1">
+                            <MapPinIcon className="w-4 h-4" />
+                            <span>{activity.location}</span>
+                          </div>
+                        )}
+                      </div>
+                      {activity.tags && activity.tags.length > 0 && (
+                        <div className="flex items-center gap-1 mt-2">
+                          {activity.tags.map((tag, index) => (
+                            <span key={index} className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+                        <PencilIcon className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(activity.id)}
+                        className="p-2 text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
 
         {/* Add Activity Modal */}
-        <Modal isOpen={isOpen} onClose={onClose} size="xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Add New Activity</ModalHeader>
-            <ModalCloseButton />
-            <form onSubmit={handleSubmit}>
-              <ModalBody>
-                <VStack spacing={4}>
-                  <FormControl isRequired>
-                    <FormLabel>Activity Title</FormLabel>
-                    <Input
-                      name="title"
-                      value={formData.title}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Morning Workout"
-                    />
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      placeholder="Optional description..."
-                    />
-                  </FormControl>
-
-                  <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
-                    <FormControl isRequired>
-                      <FormLabel>Category</FormLabel>
-                      <Select
-                        name="category"
-                        value={formData.category}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+              <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={() => setIsModalOpen(false)} />
+              
+              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium text-gray-900">Add New Activity</h3>
+                    <button
+                      onClick={() => setIsModalOpen(false)}
+                      className="p-2 text-gray-400 hover:text-gray-600"
+                    >
+                      <XMarkIcon className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Activity Title</label>
+                      <input
+                        name="title"
+                        value={formData.title}
                         onChange={handleInputChange}
-                        placeholder="Select category"
+                        placeholder="e.g., Morning Workout"
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                      <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        placeholder="Optional description..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select
+                          name="category"
+                          value={formData.category}
+                          onChange={handleInputChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select category</option>
+                          {categories.map(category => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                        <input
+                          name="duration_minutes"
+                          type="number"
+                          value={formData.duration_minutes}
+                          onChange={handleInputChange}
+                          placeholder="45"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <input
+                          name="date"
+                          type="date"
+                          value={formData.date}
+                          onChange={handleInputChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                        <input
+                          name="location"
+                          value={formData.location}
+                          onChange={handleInputChange}
+                          placeholder="e.g., Home, Office"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                        <input
+                          name="time_start"
+                          type="time"
+                          value={formData.time_start}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                        <input
+                          name="time_end"
+                          type="time"
+                          value={formData.time_end}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+                      <input
+                        name="tags"
+                        value={formData.tags}
+                        onChange={handleInputChange}
+                        placeholder="e.g., cardio, strength, morning"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4">
+                      <button
+                        type="button"
+                        onClick={() => setIsModalOpen(false)}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        {categories.map(category => (
-                          <option key={category} value={category}>{category}</option>
-                        ))}
-                      </Select>
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Duration (minutes)</FormLabel>
-                      <Input
-                        name="duration_minutes"
-                        type="number"
-                        value={formData.duration_minutes}
-                        onChange={handleInputChange}
-                        placeholder="45"
-                      />
-                    </FormControl>
-
-                    <FormControl isRequired>
-                      <FormLabel>Date</FormLabel>
-                      <Input
-                        name="date"
-                        type="date"
-                        value={formData.date}
-                        onChange={handleInputChange}
-                      />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Location</FormLabel>
-                      <Input
-                        name="location"
-                        value={formData.location}
-                        onChange={handleInputChange}
-                        placeholder="e.g., Home, Office"
-                      />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Start Time</FormLabel>
-                      <Input
-                        name="time_start"
-                        type="time"
-                        value={formData.time_start}
-                        onChange={handleInputChange}
-                      />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>End Time</FormLabel>
-                      <Input
-                        name="time_end"
-                        type="time"
-                        value={formData.time_end}
-                        onChange={handleInputChange}
-                      />
-                    </FormControl>
-                  </Grid>
-
-                  <FormControl>
-                    <FormLabel>Tags (comma-separated)</FormLabel>
-                    <Input
-                      name="tags"
-                      value={formData.tags}
-                      onChange={handleInputChange}
-                      placeholder="e.g., cardio, strength, morning"
-                    />
-                  </FormControl>
-                </VStack>
-              </ModalBody>
-
-              <ModalFooter>
-                <Button variant="ghost" mr={3} onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button type="submit" colorScheme="brand" isLoading={loading}>
-                  Add Activity
-                </Button>
-              </ModalFooter>
-            </form>
-          </ModalContent>
-        </Modal>
-      </Container>
-    </Box>
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                      >
+                        {loading ? 'Adding...' : 'Add Activity'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

@@ -1,105 +1,57 @@
 'use client'
 
 import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Card,
-  CardBody,
-  VStack,
-  HStack,
-  Button,
-  Input,
-  Select,
-  Textarea,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Badge,
-  IconButton,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalCloseButton,
-  useToast,
-  Flex,
-  Checkbox,
-  Progress,
-  Divider,
-} from '@chakra-ui/react'
-import { 
-  AddIcon, 
-  CalendarIcon, 
-  TimeIcon, 
-  EditIcon,
-  DeleteIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
   CheckIcon,
-  WarningIcon
-} from '@chakra-ui/icons'
+  ClockIcon,
+  FlagIcon,
+  CalendarIcon,
+  TagIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
 
 interface Task {
   id: string
   title: string
   description?: string
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
-  priority: 'low' | 'medium' | 'high' | 'urgent'
+  status: 'todo' | 'in_progress' | 'completed'
+  priority: 'low' | 'medium' | 'high'
   due_date?: string
-  estimated_duration_minutes?: number
-  actual_duration_minutes?: number
-  category?: string
   tags?: string[]
   created_at: string
-  completed_at?: string
+  updated_at: string
 }
 
 const priorities = [
-  { value: 'low', label: 'Low', color: 'gray' },
-  { value: 'medium', label: 'Medium', color: 'blue' },
-  { value: 'high', label: 'High', color: 'orange' },
-  { value: 'urgent', label: 'Urgent', color: 'red' }
+  { value: 'low', label: 'Low', color: 'bg-gray-100 text-gray-800' },
+  { value: 'medium', label: 'Medium', color: 'bg-yellow-100 text-yellow-800' },
+  { value: 'high', label: 'High', color: 'bg-red-100 text-red-800' }
 ]
 
 const statuses = [
-  { value: 'pending', label: 'Pending', color: 'gray' },
-  { value: 'in_progress', label: 'In Progress', color: 'blue' },
-  { value: 'completed', label: 'Completed', color: 'green' },
-  { value: 'cancelled', label: 'Cancelled', color: 'red' }
-]
-
-const categories = [
-  'Work',
-  'Personal',
-  'Health',
-  'Learning',
-  'Finance',
-  'Home',
-  'Social',
-  'Other'
+  { value: 'todo', label: 'To Do', color: 'bg-gray-100 text-gray-800' },
+  { value: 'in_progress', label: 'In Progress', color: 'bg-blue-100 text-blue-800' },
+  { value: 'completed', label: 'Completed', color: 'bg-green-100 text-green-800' }
 ]
 
 export default function TaskManager() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(false)
-  const [filter, setFilter] = useState('all')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [filter, setFilter] = useState<'all' | 'todo' | 'in_progress' | 'completed'>('all')
+  const [sortBy, setSortBy] = useState<'created' | 'due' | 'priority'>('created')
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    priority: 'medium',
+    status: 'todo' as Task['status'],
+    priority: 'medium' as Task['priority'],
     due_date: '',
-    estimated_duration_minutes: '',
-    category: '',
     tags: ''
   })
-  
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const toast = useToast()
 
   // Mock data for now
   useEffect(() => {
@@ -107,40 +59,34 @@ export default function TaskManager() {
       {
         id: '1',
         title: 'Complete project proposal',
-        description: 'Write and submit the Q1 project proposal by Friday',
+        description: 'Write and submit the quarterly project proposal',
         status: 'in_progress',
         priority: 'high',
-        due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        estimated_duration_minutes: 120,
-        category: 'Work',
-        tags: ['proposal', 'deadline'],
-        created_at: new Date().toISOString()
+        due_date: '2024-01-15',
+        tags: ['work', 'project'],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
-        title: 'Grocery shopping',
-        description: 'Buy ingredients for weekend meal prep',
-        status: 'pending',
+        title: 'Review team feedback',
+        description: 'Go through all team feedback and implement changes',
+        status: 'todo',
         priority: 'medium',
-        due_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        estimated_duration_minutes: 45,
-        category: 'Personal',
-        tags: ['shopping', 'food'],
-        created_at: new Date().toISOString()
+        due_date: '2024-01-20',
+        tags: ['work', 'review'],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '3',
-        title: 'Review code changes',
-        description: 'Review pull requests from team members',
+        title: 'Update documentation',
+        description: 'Update API documentation for new features',
         status: 'completed',
-        priority: 'high',
-        due_date: new Date().toISOString().split('T')[0],
-        estimated_duration_minutes: 90,
-        actual_duration_minutes: 85,
-        category: 'Work',
-        tags: ['code', 'review'],
+        priority: 'low',
+        tags: ['documentation'],
         created_at: new Date().toISOString(),
-        completed_at: new Date().toISOString()
+        updated_at: new Date().toISOString()
       }
     ]
     setTasks(mockTasks)
@@ -159,480 +105,429 @@ export default function TaskManager() {
     setLoading(true)
 
     try {
-      const newTask: Task = {
-        id: Date.now().toString(),
-        title: formData.title,
-        description: formData.description,
-        status: 'pending',
-        priority: formData.priority as Task['priority'],
-        due_date: formData.due_date || undefined,
-        estimated_duration_minutes: formData.estimated_duration_minutes ? parseInt(formData.estimated_duration_minutes) : undefined,
-        category: formData.category || undefined,
-        tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : undefined,
-        created_at: new Date().toISOString()
+      if (editingTask) {
+        // Update existing task
+        const updatedTask: Task = {
+          ...editingTask,
+          title: formData.title,
+          description: formData.description,
+          status: formData.status,
+          priority: formData.priority,
+          due_date: formData.due_date || undefined,
+          tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : undefined,
+          updated_at: new Date().toISOString()
+        }
+
+        setTasks(prev => prev.map(task => task.id === editingTask.id ? updatedTask : task))
+      } else {
+        // Add new task
+        const newTask: Task = {
+          id: Date.now().toString(),
+          title: formData.title,
+          description: formData.description,
+          status: formData.status,
+          priority: formData.priority,
+          due_date: formData.due_date || undefined,
+          tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : undefined,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+
+        setTasks(prev => [newTask, ...prev])
       }
-
-      setTasks(prev => [newTask, ...prev])
       
-      toast({
-        title: 'Task created successfully',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      })
-
       // Reset form
       setFormData({
         title: '',
         description: '',
+        status: 'todo',
         priority: 'medium',
         due_date: '',
-        estimated_duration_minutes: '',
-        category: '',
         tags: ''
       })
-      
-      onClose()
+      setEditingTask(null)
+      setIsModalOpen(false)
     } catch (error) {
-      toast({
-        title: 'Error creating task',
-        description: 'Please try again',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      })
+      console.error('Error saving task:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleStatusChange = (taskId: string, newStatus: Task['status']) => {
-    setTasks(prev => prev.map(task => 
-      task.id === taskId 
-        ? { 
-            ...task, 
-            status: newStatus,
-            completed_at: newStatus === 'completed' ? new Date().toISOString() : undefined
-          }
-        : task
-    ))
-
-    toast({
-      title: `Task marked as ${newStatus}`,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
+  const handleEdit = (task: Task) => {
+    setEditingTask(task)
+    setFormData({
+      title: task.title,
+      description: task.description || '',
+      status: task.status,
+      priority: task.priority,
+      due_date: task.due_date || '',
+      tags: task.tags ? task.tags.join(', ') : ''
     })
+    setIsModalOpen(true)
   }
 
   const handleDelete = (id: string) => {
     setTasks(prev => prev.filter(task => task.id !== id))
-    toast({
-      title: 'Task deleted',
-      status: 'info',
-      duration: 3000,
-      isClosable: true,
+  }
+
+  const handleStatusChange = (id: string, newStatus: Task['status']) => {
+    setTasks(prev => prev.map(task => 
+      task.id === id 
+        ? { ...task, status: newStatus, updated_at: new Date().toISOString() }
+        : task
+    ))
+  }
+
+  const filteredAndSortedTasks = tasks
+    .filter(task => filter === 'all' || task.status === filter)
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'created':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        case 'due':
+          if (!a.due_date && !b.due_date) return 0
+          if (!a.due_date) return 1
+          if (!b.due_date) return -1
+          return new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+        case 'priority':
+          const priorityOrder = { high: 3, medium: 2, low: 1 }
+          return priorityOrder[b.priority] - priorityOrder[a.priority]
+        default:
+          return 0
+      }
     })
+
+  const getPriorityColor = (priority: Task['priority']) => {
+    return priorities.find(p => p.value === priority)?.color || 'bg-gray-100 text-gray-800'
   }
 
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'all') return true
-    if (filter === 'overdue') {
-      return task.status !== 'completed' && task.due_date && new Date(task.due_date) < new Date()
-    }
-    return task.status === filter
-  })
-
-  const getPriorityColor = (priority: string) => {
-    const priorityObj = priorities.find(p => p.value === priority)
-    return priorityObj?.color || 'gray'
-  }
-
-  const getStatusColor = (status: string) => {
-    const statusObj = statuses.find(s => s.value === status)
-    return statusObj?.color || 'gray'
+  const getStatusColor = (status: Task['status']) => {
+    return statuses.find(s => s.value === status)?.color || 'bg-gray-100 text-gray-800'
   }
 
   const isOverdue = (dueDate: string) => {
-    return new Date(dueDate) < new Date()
+    return new Date(dueDate) < new Date() && new Date(dueDate).toDateString() !== new Date().toDateString()
   }
 
-  const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes}m`
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
-  }
-
-  const stats = {
+  const taskStats = {
     total: tasks.length,
     completed: tasks.filter(t => t.status === 'completed').length,
-    pending: tasks.filter(t => t.status === 'pending').length,
     inProgress: tasks.filter(t => t.status === 'in_progress').length,
-    overdue: tasks.filter(t => t.status !== 'completed' && t.due_date && isOverdue(t.due_date)).length
+    todo: tasks.filter(t => t.status === 'todo').length
   }
 
   return (
-    <Box minH="100vh" bg="gray.50" py={8}>
-      <Container maxW="container.xl">
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <Flex justify="space-between" align="center" mb={8}>
-          <VStack align="start" spacing={2}>
-            <Heading size="xl" color="brand.500">
+        <div className="flex justify-between items-center mb-8">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-blue-600">
               Task Manager
-            </Heading>
-            <Text color="gray.600">
+            </h1>
+            <p className="text-gray-600">
               Organize and track your tasks efficiently
-            </Text>
-          </VStack>
-          <Button 
-            leftIcon={<AddIcon />} 
-            colorScheme="brand" 
-            onClick={onOpen}
+            </p>
+          </div>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
+            <PlusIcon className="w-4 h-4 mr-2" />
             Add Task
-          </Button>
-        </Flex>
+          </button>
+        </div>
 
         {/* Stats Overview */}
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(5, 1fr)' }} gap={4} mb={8}>
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">Total</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="brand.500">
-                    {stats.total}
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">Total Tasks</p>
+              <p className="text-2xl font-bold text-blue-500">{taskStats.total}</p>
+            </div>
+          </div>
           
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">Completed</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="green.500">
-                    {stats.completed}
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
+          <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">To Do</p>
+              <p className="text-2xl font-bold text-gray-500">{taskStats.todo}</p>
+            </div>
+          </div>
           
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">Pending</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="blue.500">
-                    {stats.pending}
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
+          <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">In Progress</p>
+              <p className="text-2xl font-bold text-yellow-500">{taskStats.inProgress}</p>
+            </div>
+          </div>
           
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">In Progress</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="orange.500">
-                    {stats.inProgress}
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
-          
-          <GridItem>
-            <Card>
-              <CardBody>
-                <VStack align="start" spacing={2}>
-                  <Text fontSize="sm" color="gray.600">Overdue</Text>
-                  <Text fontSize="2xl" fontWeight="bold" color="red.500">
-                    {stats.overdue}
-                  </Text>
-                </VStack>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
+          <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">Completed</p>
+              <p className="text-2xl font-bold text-green-500">{taskStats.completed}</p>
+            </div>
+          </div>
+        </div>
 
-        {/* Progress Overview */}
-        <Card mb={8}>
-          <CardBody>
-            <VStack align="start" spacing={4}>
-              <Text fontWeight="medium">Overall Progress</Text>
-              <Box w="full">
-                <Flex justify="space-between" mb={2}>
-                  <Text fontSize="sm">Task Completion</Text>
-                  <Text fontSize="sm" fontWeight="medium">
-                    {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
-                  </Text>
-                </Flex>
-                <Progress 
-                  value={stats.total > 0 ? (stats.completed / stats.total) * 100 : 0} 
-                  colorScheme="green" 
-                  size="lg" 
-                />
-              </Box>
-            </VStack>
-          </CardBody>
-        </Card>
-
-        {/* Filter Tabs */}
-        <HStack spacing={2} mb={6}>
-          {[
-            { key: 'all', label: 'All Tasks', color: 'gray' },
-            { key: 'pending', label: 'Pending', color: 'blue' },
-            { key: 'in_progress', label: 'In Progress', color: 'orange' },
-            { key: 'completed', label: 'Completed', color: 'green' },
-            { key: 'overdue', label: 'Overdue', color: 'red' }
-          ].map(filterOption => (
-            <Button
-              key={filterOption.key}
-              size="sm"
-              variant={filter === filterOption.key ? 'solid' : 'outline'}
-              colorScheme={filter === filterOption.key ? filterOption.color : 'gray'}
-              onClick={() => setFilter(filterOption.key)}
-            >
-              {filterOption.label}
-            </Button>
-          ))}
-        </HStack>
+        {/* Filters and Controls */}
+        <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700">Filter:</label>
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value as typeof filter)}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">All Tasks</option>
+                  <option value="todo">To Do</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="created">Created Date</option>
+                  <option value="due">Due Date</option>
+                  <option value="priority">Priority</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="text-sm text-gray-600">
+              Showing {filteredAndSortedTasks.length} of {tasks.length} tasks
+            </div>
+          </div>
+        </div>
 
         {/* Tasks List */}
-        <Card>
-          <CardBody>
-            <VStack spacing={4} align="stretch">
-              {filteredTasks.length === 0 ? (
-                <Text color="gray.500" textAlign="center" py={8}>
-                  {filter === 'all' 
-                    ? 'No tasks created yet. Add your first task to get started!'
-                    : `No ${filter} tasks found.`
-                  }
-                </Text>
-              ) : (
-                filteredTasks.map((task) => (
-                  <Box key={task.id} p={4} border="1px" borderColor="gray.200" borderRadius="lg">
-                    <Flex justify="space-between" align="start" mb={3}>
-                      <HStack spacing={3} flex={1}>
-                        <Checkbox
-                          isChecked={task.status === 'completed'}
-                          onChange={(e) => handleStatusChange(
-                            task.id, 
-                            e.target.checked ? 'completed' : 'pending'
+        <div className="space-y-4">
+          {filteredAndSortedTasks.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-500">
+                {filter === 'all' ? 'No tasks created yet. Add your first task to get started!' : `No ${filter.replace('_', ' ')} tasks found.`}
+              </p>
+            </div>
+          ) : (
+            filteredAndSortedTasks.map((task) => (
+              <div key={task.id} className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-3 flex-1">
+                    <div className="flex items-start gap-3">
+                      <button
+                        onClick={() => handleStatusChange(task.id, task.status === 'completed' ? 'todo' : 'completed')}
+                        className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                          task.status === 'completed' 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-gray-300 hover:border-green-500'
+                        }`}
+                      >
+                        {task.status === 'completed' && <CheckIcon className="w-3 h-3" />}
+                      </button>
+                      
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className={`font-medium text-lg ${task.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                            {task.title}
+                          </h3>
+                          <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(task.priority)}`}>
+                            <FlagIcon className="w-3 h-3 mr-1" />
+                            {priorities.find(p => p.value === task.priority)?.label}
+                          </span>
+                          <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(task.status)}`}>
+                            {statuses.find(s => s.value === task.status)?.label}
+                          </span>
+                        </div>
+                        
+                        {task.description && (
+                          <p className="text-gray-600 text-sm">{task.description}</p>
+                        )}
+                        
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <CalendarIcon className="w-4 h-4" />
+                            <span>Created {new Date(task.created_at).toLocaleDateString()}</span>
+                          </div>
+                          {task.due_date && (
+                            <div className={`flex items-center gap-1 ${isOverdue(task.due_date) ? 'text-red-600' : ''}`}>
+                              <ClockIcon className="w-4 h-4" />
+                              <span>Due {new Date(task.due_date).toLocaleDateString()}</span>
+                              {isOverdue(task.due_date) && <span className="text-red-600 font-medium">(Overdue)</span>}
+                            </div>
                           )}
-                          colorScheme="green"
-                        />
-                        <VStack align="start" spacing={1} flex={1}>
-                          <HStack spacing={2}>
-                            <Text 
-                              fontWeight="medium" 
-                              fontSize="lg"
-                              textDecoration={task.status === 'completed' ? 'line-through' : 'none'}
-                              color={task.status === 'completed' ? 'gray.500' : 'inherit'}
-                            >
-                              {task.title}
-                            </Text>
-                            {task.due_date && isOverdue(task.due_date) && task.status !== 'completed' && (
-                              <WarningIcon color="red.500" />
-                            )}
-                          </HStack>
-                          {task.description && (
-                            <Text 
-                              color="gray.600" 
-                              fontSize="sm"
-                              textDecoration={task.status === 'completed' ? 'line-through' : 'none'}
-                            >
-                              {task.description}
-                            </Text>
-                          )}
-                          <HStack spacing={4} fontSize="sm" color="gray.500">
-                            <Badge colorScheme={getPriorityColor(task.priority)}>
-                              {priorities.find(p => p.value === task.priority)?.label}
-                            </Badge>
-                            <Badge colorScheme={getStatusColor(task.status)}>
-                              {statuses.find(s => s.value === task.status)?.label}
-                            </Badge>
-                            {task.category && (
-                              <Badge variant="outline" colorScheme="gray">
-                                {task.category}
-                              </Badge>
-                            )}
-                            {task.due_date && (
-                              <HStack spacing={1}>
-                                <CalendarIcon />
-                                <Text 
-                                  color={isOverdue(task.due_date) && task.status !== 'completed' ? 'red.500' : 'inherit'}
-                                >
-                                  {new Date(task.due_date).toLocaleDateString()}
-                                </Text>
-                              </HStack>
-                            )}
-                            {task.estimated_duration_minutes && (
-                              <HStack spacing={1}>
-                                <TimeIcon />
-                                <Text>{formatDuration(task.estimated_duration_minutes)}</Text>
-                              </HStack>
-                            )}
-                          </HStack>
-                          {task.tags && task.tags.length > 0 && (
-                            <HStack spacing={1} mt={2}>
-                              {task.tags.map((tag, index) => (
-                                <Badge key={index} variant="subtle" colorScheme="gray" size="sm">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </HStack>
-                          )}
-                        </VStack>
-                      </HStack>
-                      <HStack spacing={2}>
-                        <Select
-                          size="sm"
-                          value={task.status}
-                          onChange={(e) => handleStatusChange(task.id, e.target.value as Task['status'])}
-                          w="140px"
+                        </div>
+                        
+                        {task.tags && task.tags.length > 0 && (
+                          <div className="flex items-center gap-1">
+                            <TagIcon className="w-4 h-4 text-gray-400" />
+                            {task.tags.map((tag, index) => (
+                              <span key={index} className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 ml-4">
+                    <button 
+                      onClick={() => handleEdit(task)}
+                      className="p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(task.id)}
+                      className="p-2 text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Add/Edit Task Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+              <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={() => {
+                setIsModalOpen(false)
+                setEditingTask(null)
+              }} />
+              
+              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {editingTask ? 'Edit Task' : 'Add New Task'}
+                    </h3>
+                    <button
+                      onClick={() => {
+                        setIsModalOpen(false)
+                        setEditingTask(null)
+                      }}
+                      className="p-2 text-gray-400 hover:text-gray-600"
+                    >
+                      <XMarkIcon className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Task Title</label>
+                      <input
+                        name="title"
+                        value={formData.title}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Complete project proposal"
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                      <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        placeholder="Optional description..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select
+                          name="status"
+                          value={formData.status}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                           {statuses.map(status => (
-                            <option key={status.value} value={status.value}>
-                              {status.label}
-                            </option>
+                            <option key={status.value} value={status.value}>{status.label}</option>
                           ))}
-                        </Select>
-                        <IconButton
-                          aria-label="Edit task"
-                          icon={<EditIcon />}
-                          size="sm"
-                          variant="ghost"
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                        <select
+                          name="priority"
+                          value={formData.priority}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          {priorities.map(priority => (
+                            <option key={priority.value} value={priority.value}>{priority.label}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                        <input
+                          name="due_date"
+                          type="date"
+                          value={formData.due_date}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        <IconButton
-                          aria-label="Delete task"
-                          icon={<DeleteIcon />}
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="red"
-                          onClick={() => handleDelete(task.id)}
-                        />
-                      </HStack>
-                    </Flex>
-                  </Box>
-                ))
-              )}
-            </VStack>
-          </CardBody>
-        </Card>
+                      </div>
+                    </div>
 
-        {/* Add Task Modal */}
-        <Modal isOpen={isOpen} onClose={onClose} size="xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Create New Task</ModalHeader>
-            <ModalCloseButton />
-            <form onSubmit={handleSubmit}>
-              <ModalBody>
-                <VStack spacing={4}>
-                  <FormControl isRequired>
-                    <FormLabel>Task Title</FormLabel>
-                    <Input
-                      name="title"
-                      value={formData.title}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Complete project proposal"
-                    />
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      placeholder="Optional description..."
-                    />
-                  </FormControl>
-
-                  <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
-                    <FormControl>
-                      <FormLabel>Priority</FormLabel>
-                      <Select
-                        name="priority"
-                        value={formData.priority}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+                      <input
+                        name="tags"
+                        value={formData.tags}
                         onChange={handleInputChange}
-                      >
-                        {priorities.map(priority => (
-                          <option key={priority.value} value={priority.value}>
-                            {priority.label}
-                          </option>
-                        ))}
-                      </Select>
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Due Date</FormLabel>
-                      <Input
-                        name="due_date"
-                        type="date"
-                        value={formData.due_date}
-                        onChange={handleInputChange}
+                        placeholder="e.g., work, project, urgent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
-                    </FormControl>
+                    </div>
 
-                    <FormControl>
-                      <FormLabel>Estimated Duration (minutes)</FormLabel>
-                      <Input
-                        name="estimated_duration_minutes"
-                        type="number"
-                        value={formData.estimated_duration_minutes}
-                        onChange={handleInputChange}
-                        placeholder="60"
-                      />
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Category</FormLabel>
-                      <Select
-                        name="category"
-                        value={formData.category}
-                        onChange={handleInputChange}
-                        placeholder="Select category"
+                    <div className="flex justify-end gap-3 pt-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsModalOpen(false)
+                          setEditingTask(null)
+                        }}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        {categories.map(category => (
-                          <option key={category} value={category}>{category}</option>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-
-                  <FormControl>
-                    <FormLabel>Tags (comma-separated)</FormLabel>
-                    <Input
-                      name="tags"
-                      value={formData.tags}
-                      onChange={handleInputChange}
-                      placeholder="e.g., urgent, project, deadline"
-                    />
-                  </FormControl>
-                </VStack>
-              </ModalBody>
-
-              <ModalFooter>
-                <Button variant="ghost" mr={3} onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button type="submit" colorScheme="brand" isLoading={loading}>
-                  Create Task
-                </Button>
-              </ModalFooter>
-            </form>
-          </ModalContent>
-        </Modal>
-      </Container>
-    </Box>
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                      >
+                        {loading ? 'Saving...' : editingTask ? 'Update Task' : 'Add Task'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

@@ -5,5 +5,7 @@
   "exec": "ts-node server/server.ts",
   "env": {
     "NODE_ENV": "development"
-  }
+  },
+  "legacyWatch": true,
+  "delay": 1000
 }

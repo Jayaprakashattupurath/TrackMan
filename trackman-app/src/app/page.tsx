@@ -1,36 +1,17 @@
 'use client'
 
 import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Button,
-  Grid,
-  GridItem,
-  Card,
-  CardBody,
-  VStack,
-  HStack,
-  Icon,
-  useColorModeValue,
-  Flex,
-} from '@chakra-ui/react'
-import { 
-  CalendarIcon, 
-  TimeIcon, 
-  StarIcon, 
-  SettingsIcon,
-  ViewIcon,
-  AddIcon
-} from '@chakra-ui/icons'
+  CalendarIcon,
+  ClockIcon,
+  StarIcon,
+  CogIcon,
+  EyeIcon,
+  PlusIcon,
+} from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 
 export default function Home() {
-  const bgColor = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('gray.200', 'gray.600')
-
   const features = [
     {
       icon: CalendarIcon,
@@ -39,7 +20,7 @@ export default function Home() {
       color: 'blue',
     },
     {
-      icon: TimeIcon,
+      icon: ClockIcon,
       title: 'Time Management',
       description: 'Monitor how you spend your time',
       color: 'green',
@@ -51,106 +32,116 @@ export default function Home() {
       color: 'purple',
     },
     {
-      icon: SettingsIcon,
+      icon: CogIcon,
       title: 'Work Tracking',
       description: 'Manage tasks and productivity',
       color: 'orange',
     },
   ]
 
+  const getColorClasses = (color: string) => {
+    const colors = {
+      blue: 'text-blue-500',
+      green: 'text-green-500',
+      purple: 'text-purple-500',
+      orange: 'text-orange-500',
+    }
+    return colors[color as keyof typeof colors] || 'text-gray-500'
+  }
+
+  const getButtonColorClasses = (color: string) => {
+    const colors = {
+      blue: 'text-blue-600 hover:bg-blue-50',
+      green: 'text-green-600 hover:bg-green-50',
+      purple: 'text-purple-600 hover:bg-purple-50',
+      orange: 'text-orange-600 hover:bg-orange-50',
+    }
+    return colors[color as keyof typeof colors] || 'text-gray-600 hover:bg-gray-50'
+  }
+
   return (
-    <Box minH="100vh" bg="gray.50">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
 
       {/* Hero Section */}
-      <Container maxW="container.xl" py={20}>
-        <VStack spacing={8} textAlign="center">
-          <Heading size="2xl" color="brand.500">
+      <div className="max-w-7xl mx-auto px-4 py-20">
+        <div className="text-center space-y-8">
+          <h1 className="text-4xl font-bold text-blue-600">
             Take Control of Your Day
-          </Heading>
-          <Text fontSize="xl" color="gray.600" maxW="2xl">
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Track your activities, manage tasks, monitor health, and boost productivity 
             with our comprehensive personal tracking platform.
-          </Text>
-          <HStack spacing={4}>
-            <Link href="/dashboard" passHref>
-              <Button as="a" size="lg" colorScheme="brand" leftIcon={<AddIcon />}>
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link href="/dashboard">
+              <button className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                <PlusIcon className="w-5 h-5 mr-2" />
                 Start Tracking
-              </Button>
+              </button>
             </Link>
-            <Link href="/dashboard" passHref>
-              <Button as="a" size="lg" variant="outline" leftIcon={<ViewIcon />}>
+            <Link href="/dashboard">
+              <button className="inline-flex items-center px-6 py-3 text-lg font-medium text-blue-600 bg-white border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                <EyeIcon className="w-5 h-5 mr-2" />
                 View Dashboard
-              </Button>
+              </button>
             </Link>
-          </HStack>
-        </VStack>
-      </Container>
+          </div>
+        </div>
+      </div>
 
       {/* Features Section */}
-      <Container maxW="container.xl" py={16}>
-        <VStack spacing={12}>
-          <VStack spacing={4} textAlign="center">
-            <Heading size="xl">Everything You Need to Track</Heading>
-            <Text fontSize="lg" color="gray.600" maxW="2xl">
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold text-gray-900">Everything You Need to Track</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Comprehensive tracking tools designed to help you understand and improve your daily life.
-            </Text>
-          </VStack>
+            </p>
+          </div>
 
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={6} w="full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <GridItem key={index}>
-                <Card h="full" _hover={{ transform: 'translateY(-4px)', shadow: 'lg' }} transition="all 0.2s">
-                  <CardBody>
-                    <VStack spacing={4} align="stretch" h="full">
-                      <Icon 
-                        as={feature.icon} 
-                        w={8} 
-                        h={8} 
-                        color={`${feature.color}.500`}
-                      />
-                      <VStack spacing={2} align="stretch" flex={1}>
-                        <Heading size="md">{feature.title}</Heading>
-                        <Text color="gray.600" flex={1}>
-                          {feature.description}
-                        </Text>
-                      </VStack>
-                      <Link href={`/${feature.title.toLowerCase().replace(' & ', '-').replace(' ', '-')}`} passHref>
-                        <Button 
-                          as="a"
-                          variant="ghost" 
-                          colorScheme={feature.color}
-                          size="sm"
-                          alignSelf="flex-start"
-                        >
-                          Learn More
-                        </Button>
-                      </Link>
-                    </VStack>
-                  </CardBody>
-                </Card>
-              </GridItem>
+              <div
+                key={index}
+                className="p-6 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full"
+              >
+                <div className="space-y-4 h-full flex flex-col">
+                  <feature.icon className={`w-8 h-8 ${getColorClasses(feature.color)}`} />
+                  <div className="space-y-2 flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
+                    <p className="text-gray-600 text-sm flex-1">
+                      {feature.description}
+                    </p>
+                  </div>
+                  <Link href={`/${feature.title.toLowerCase().replace(' & ', '-').replace(' ', '-')}`}>
+                    <button className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${getButtonColorClasses(feature.color)}`}>
+                      Learn More
+                    </button>
+                  </Link>
+                </div>
+              </div>
             ))}
-          </Grid>
-        </VStack>
-      </Container>
+          </div>
+        </div>
+      </div>
 
       {/* CTA Section */}
-      <Box bg="brand.500" py={16}>
-        <Container maxW="container.xl">
-          <VStack spacing={6} textAlign="center" color="white">
-            <Heading size="xl">Ready to Start Tracking?</Heading>
-            <Text fontSize="lg" maxW="2xl">
+      <div className="bg-blue-600 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center space-y-6 text-white">
+            <h2 className="text-3xl font-bold">Ready to Start Tracking?</h2>
+            <p className="text-lg max-w-2xl mx-auto">
               Join thousands of users who are already improving their lives with TrackMan.
-            </Text>
-            <Link href="/dashboard" passHref>
-              <Button as="a" size="lg" colorScheme="white" variant="outline">
+            </p>
+            <Link href="/dashboard">
+              <button className="inline-flex items-center px-6 py-3 text-lg font-medium text-blue-600 bg-white rounded-lg hover:bg-gray-50 transition-colors">
                 Get Started Today
-              </Button>
+              </button>
             </Link>
-          </VStack>
-        </Container>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

@@ -1,72 +1,51 @@
 'use client'
 
 import {
-  Box,
-  Flex,
-  HStack,
-  VStack,
-  Heading,
-  Text,
-  Button,
-  IconButton,
-  useColorModeValue,
-  useDisclosure,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Link as ChakraLink,
-} from '@chakra-ui/react'
-import {
-  HamburgerIcon,
   CalendarIcon,
-  TimeIcon,
+  ClockIcon,
   StarIcon,
-  SettingsIcon,
-  ViewIcon,
-  UserIcon,
-} from '@chakra-ui/icons'
+  CogIcon,
+  EyeIcon,
+  Bars3Icon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
 const navigationItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: ViewIcon },
+  { name: 'Dashboard', href: '/dashboard', icon: EyeIcon },
   { name: 'Activities', href: '/activities', icon: CalendarIcon },
-  { name: 'Tasks', href: '/tasks', icon: TimeIcon },
+  { name: 'Tasks', href: '/tasks', icon: ClockIcon },
   { name: 'Health', href: '/health', icon: StarIcon },
-  { name: 'Work', href: '/work', icon: SettingsIcon },
+  { name: 'Work', href: '/work', icon: CogIcon },
 ]
 
 export default function Navigation() {
   const pathname = usePathname()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isOpen, setIsOpen] = useState(false)
   
-  const bgColor = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('gray.200', 'gray.600')
-  const textColor = useColorModeValue('gray.700', 'gray.200')
+  const onOpen = () => setIsOpen(true)
+  const onClose = () => setIsOpen(false)
 
   const NavLink = ({ item }: { item: typeof navigationItems[0] }) => {
     const isActive = pathname === item.href
     const Icon = item.icon
     
     return (
-      <Link href={item.href} passHref>
-        <ChakraLink
-          as={Button}
-          variant={isActive ? 'solid' : 'ghost'}
-          colorScheme={isActive ? 'brand' : 'gray'}
-          leftIcon={<Icon />}
-          justifyContent="flex-start"
-          w="full"
-          size="sm"
-          _hover={{
-            bg: isActive ? undefined : useColorModeValue('gray.100', 'gray.700')
-          }}
+      <Link href={item.href}>
+        <button
+          className={cn(
+            'flex items-center justify-start w-full px-3 py-2 text-sm font-medium rounded-md transition-colors',
+            isActive
+              ? 'bg-blue-100 text-blue-700'
+              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+          )}
         >
+          <Icon className="w-4 h-4 mr-2" />
           {item.name}
-        </ChakraLink>
+        </button>
       </Link>
     )
   }
@@ -74,81 +53,70 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop Navigation */}
-      <Box
-        as="nav"
-        bg={bgColor}
-        borderBottom="1px"
-        borderColor={borderColor}
-        px={4}
-        py={3}
-      >
-        <Flex justify="space-between" align="center" maxW="container.xl" mx="auto">
+      <nav className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" passHref>
-            <ChakraLink _hover={{ textDecoration: 'none' }}>
-              <Heading size="md" color="brand.500">
-                TrackMan
-              </Heading>
-            </ChakraLink>
+          <Link href="/" className="hover:no-underline">
+            <h1 className="text-lg font-semibold text-blue-600">
+              TrackMan
+            </h1>
           </Link>
 
           {/* Desktop Navigation Items */}
-          <HStack spacing={2} display={{ base: 'none', md: 'flex' }}>
+          <div className="hidden md:flex items-center space-x-2">
             {navigationItems.map((item) => (
               <NavLink key={item.name} item={item} />
             ))}
-          </HStack>
+          </div>
 
           {/* User Menu */}
-          <HStack spacing={4}>
-            <Button size="sm" variant="ghost" leftIcon={<UserIcon />}>
+          <div className="flex items-center space-x-4">
+            <button className="text-sm text-gray-700 hover:text-gray-900">
               Profile
-            </Button>
-            <IconButton
-              aria-label="Open menu"
-              icon={<HamburgerIcon />}
-              variant="ghost"
-              display={{ base: 'flex', md: 'none' }}
+            </button>
+            <button
+              className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
               onClick={onOpen}
-            />
-          </HStack>
-        </Flex>
-      </Box>
+            >
+              <Bars3Icon className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </nav>
 
       {/* Mobile Navigation Drawer */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>
-            <Heading size="md" color="brand.500">
-              TrackMan
-            </Heading>
-          </DrawerHeader>
-
-          <DrawerBody>
-            <VStack spacing={2} align="stretch">
-              {navigationItems.map((item) => (
-                <Box key={item.name} onClick={onClose}>
-                  <NavLink item={item} />
-                </Box>
-              ))}
-              
-              <Box pt={4} borderTop="1px" borderColor={borderColor}>
-                <Button
-                  variant="ghost"
-                  leftIcon={<UserIcon />}
-                  justifyContent="flex-start"
-                  w="full"
-                  size="sm"
+      {isOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
+          <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-blue-600">TrackMan</h2>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-md text-gray-700 hover:bg-gray-100"
                 >
-                  Profile
-                </Button>
-              </Box>
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+                  <XMarkIcon className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="space-y-2">
+                {navigationItems.map((item) => (
+                  <div key={item.name} onClick={onClose}>
+                    <NavLink item={item} />
+                  </div>
+                ))}
+                
+                <div className="pt-4 border-t border-gray-200">
+                  <button className="flex items-center justify-start w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                    Profile
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

@@ -1,94 +1,75 @@
 import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Card,
-  CardBody,
-  VStack,
-  HStack,
-  Button,
-  useColorModeValue,
-  Grid,
-  GridItem,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  StatArrow,
-  Progress,
-  Badge,
-} from '@chakra-ui/react'
-import { 
-  StarIcon, 
-  TimeIcon, 
-  ViewIcon,
-  AddIcon,
-  CheckIcon
-} from '@chakra-ui/icons'
+  StarIcon,
+  ClockIcon,
+  EyeIcon,
+  PlusIcon,
+  CheckIcon,
+} from '@heroicons/react/24/outline'
 import Navigation from '@/components/Navigation'
 
 export default function HealthPage() {
-  const bgColor = useColorModeValue('white', 'gray.800')
-
   return (
     <>
       <Navigation />
-      <Box minH="100vh" bg="gray.50" py={8}>
-        <Container maxW="container.xl">
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
-          <VStack align="start" spacing={2} mb={8}>
-            <Heading size="xl" color="brand.500">
+          <div className="space-y-2 mb-8">
+            <h1 className="text-3xl font-bold text-blue-600">
               Health & Fitness
-            </Heading>
-            <Text color="gray.600">
+            </h1>
+            <p className="text-gray-600">
               Track your workouts, nutrition, and wellness metrics
-            </Text>
-          </VStack>
+            </p>
+          </div>
 
           {/* Coming Soon Card */}
-          <Card maxW="600px" mx="auto">
-            <CardBody textAlign="center" py={12}>
-              <VStack spacing={6}>
-                <StarIcon w={16} h={16} color="brand.500" />
-                <VStack spacing={2}>
-                  <Heading size="lg">Health Tracking Coming Soon</Heading>
-                  <Text color="gray.600" maxW="md">
-                    We're working on comprehensive health and fitness tracking features including:
-                  </Text>
-                </VStack>
+          <div className="max-w-2xl mx-auto">
+            <div className="p-12 bg-white rounded-lg shadow-sm border border-gray-200 text-center">
+              <div className="space-y-6">
+                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                  <StarIcon className="w-8 h-8 text-blue-600" />
+                </div>
                 
-                <VStack spacing={3} align="start" w="full" maxW="400px">
-                  <HStack spacing={3}>
-                    <CheckIcon color="green.500" />
-                    <Text fontSize="sm">Workout logging and progress tracking</Text>
-                  </HStack>
-                  <HStack spacing={3}>
-                    <CheckIcon color="green.500" />
-                    <Text fontSize="sm">Nutrition and meal planning</Text>
-                  </HStack>
-                  <HStack spacing={3}>
-                    <CheckIcon color="green.500" />
-                    <Text fontSize="sm">Sleep quality monitoring</Text>
-                  </HStack>
-                  <HStack spacing={3}>
-                    <CheckIcon color="green.500" />
-                    <Text fontSize="sm">Health metrics and goals</Text>
-                  </HStack>
-                  <HStack spacing={3}>
-                    <CheckIcon color="green.500" />
-                    <Text fontSize="sm">Mood and wellness tracking</Text>
-                  </HStack>
-                </VStack>
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-gray-900">Health Tracking Coming Soon</h2>
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    We're working on comprehensive health and fitness tracking features including:
+                  </p>
+                </div>
+                
+                <div className="space-y-3 max-w-md mx-auto text-left">
+                  <div className="flex items-center gap-3">
+                    <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">Workout logging and progress tracking</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">Nutrition and meal planning</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">Sleep quality monitoring</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">Health metrics and goals</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">Mood and wellness tracking</span>
+                  </div>
+                </div>
 
-                <Button colorScheme="brand" leftIcon={<AddIcon />}>
+                <button className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
+                  <PlusIcon className="w-4 h-4 mr-2" />
                   Get Notified When Available
-                </Button>
-              </VStack>
-            </CardBody>
-          </Card>
-        </Container>
-      </Box>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
