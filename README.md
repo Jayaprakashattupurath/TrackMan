@@ -1,6 +1,23 @@
 # TrackMan - Personal Activity Tracker
 
-A comprehensive personal tracking application built with Next.js, React, Chakra UI, Node.js, Express.js, and SQLite. Track your daily activities, manage tasks, monitor health, and boost productivity with professional-grade tools.
+A comprehensive personal tracking application built with Next.js, React, Tailwind CSS, Node.js, Express.js, and SQLite. Track your daily activities, manage tasks, monitor health, and boost productivity with professional-grade tools.
+
+## ✨ Recent Updates
+
+### 🎨 UI Framework Migration (Latest)
+- **Removed Chakra UI** completely from the project
+- **Migrated to Tailwind CSS** for modern utility-first styling
+- **Added Heroicons** for beautiful, consistent SVG icons
+- **Improved performance** with smaller bundle size
+- **Better developer experience** with Tailwind's utility classes
+- **Enhanced accessibility** with better semantic HTML
+
+### 🔧 Technical Improvements
+- **Faster build times** without heavy UI library dependencies
+- **More control** over component styling and customization
+- **Consistent design system** with Tailwind's design tokens
+- **Better responsive design** with mobile-first approach
+- **Cleaner component code** with utility classes
 
 ## 🚀 Quick Start
 
@@ -67,9 +84,9 @@ The application uses several key packages:
 **Frontend Dependencies:**
 - `next` - React framework
 - `react` & `react-dom` - UI library
-- `@chakra-ui/react` - Component library
-- `@emotion/react` & `@emotion/styled` - Styling
-- `framer-motion` - Animations
+- `tailwindcss` - Utility-first CSS framework
+- `@heroicons/react` - Beautiful SVG icons
+- `clsx` & `tailwind-merge` - CSS class management
 
 **Backend Dependencies:**
 - `express` - Web framework
@@ -166,12 +183,35 @@ npm run client:dev
 | `npm run lint` | Run ESLint for code quality |
 | `npm run type-check` | Run TypeScript type checking |
 
+## 🛠️ Technology Stack
+
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **React 18** - Component-based UI library
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Heroicons** - Beautiful SVG icon library
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web application framework
+- **SQLite** - Lightweight database
+- **JWT** - Authentication tokens
+- **bcryptjs** - Password hashing
+
+### Development Tools
+- **ESLint** - Code linting and formatting
+- **Nodemon** - Development server with hot reload
+- **Concurrently** - Run multiple development servers
+- **TypeScript** - Static type checking
+
 ## 🔧 Development Workflow
 
 ### 1. Frontend Development
 - **Location**: `src/` directory
 - **Framework**: Next.js with App Router
-- **Styling**: Chakra UI components
+- **Styling**: Tailwind CSS utility classes
+- **Icons**: Heroicons SVG icon library
 - **Language**: TypeScript
 
 ### 2. Backend Development
@@ -188,11 +228,12 @@ npm run client:dev
 ## 📱 Application Features
 
 ### ✅ Currently Available
-- **Dashboard**: Overview of activities and tasks
-- **Activity Tracking**: Log daily activities with categories and duration
-- **Task Management**: Create, organize, and track tasks with priorities
-- **User Authentication**: Secure registration and login
-- **Responsive Design**: Works on desktop, tablet, and mobile
+- **Dashboard**: Overview of activities and tasks with modern Tailwind UI
+- **Activity Tracking**: Log daily activities with categories, duration, and location
+- **Task Management**: Create, organize, and track tasks with priorities and due dates
+- **User Authentication**: Secure registration and login system
+- **Responsive Design**: Mobile-first design that works on all devices
+- **Modern UI**: Clean, professional interface with Heroicons and Tailwind CSS
 
 ### 🔄 Coming Soon
 - **Health & Fitness**: Workout logging, nutrition tracking, sleep monitoring
@@ -393,7 +434,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgments
 
-- Built with ❤️ using Next.js and Chakra UI
+- Built with ❤️ using Next.js and Tailwind CSS
+- Modern utility-first styling with Heroicons
 - Database design inspired by modern productivity apps
 - UI/UX patterns from leading tracking applications
 
