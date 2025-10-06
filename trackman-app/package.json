@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently --kill-others-on-fail --prefix-colors bgBlue.bold,bgMagenta.bold \"npm run server:dev\" \"npm run client:dev\"",
+    "dev:cmd": "concurrently --kill-others-on-fail \"cmd /c npm run server:dev\" \"cmd /c npm run client:dev\"",
     "dev:windows": "dev.bat",
     "dev:powershell": "powershell -ExecutionPolicy Bypass -File dev.ps1",
     "client:dev": "next dev --turbopack",

@@ -8,6 +8,7 @@ import {
   EyeIcon,
   Bars3Icon,
   XMarkIcon,
+  TableCellsIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -19,6 +20,7 @@ const navigationItems = [
   { name: 'Activities', href: '/activities', icon: CalendarIcon },
   { name: 'Tasks', href: '/tasks', icon: ClockIcon },
   { name: 'Health', href: '/health', icon: StarIcon },
+  { name: 'Health Data', href: '/health-data', icon: TableCellsIcon },
   { name: 'Work', href: '/work', icon: CogIcon },
 ]
 
