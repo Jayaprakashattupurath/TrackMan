@@ -101,39 +101,10 @@ export default function HealthDataPage() {
     return prepopulatedData
   }
 
-  // Mock data for demonstration
+  // Auto-populate current month on initial load
   useEffect(() => {
-    const mockData: HealthDataEntry[] = [
-      {
-        id: 'health-entry-1',
-        date: '2024-01-15',
-        weight: 75.5,
-        bloodPressure: '120/80',
-        heartRate: 72,
-        temperature: 36.5,
-        sleepHours: 8,
-        waterIntake: 2.5,
-        steps: 8500,
-        calories: 2100,
-        notes: 'Feeling good today'
-      },
-      {
-        id: 'health-entry-2',
-        date: '2024-01-16',
-        weight: 75.2,
-        bloodPressure: '118/78',
-        heartRate: 68,
-        temperature: 36.3,
-        sleepHours: 7.5,
-        waterIntake: 2.8,
-        steps: 9200,
-        calories: 2250,
-        notes: 'Good workout session'
-      }
-    ]
-    setHealthData(mockData)
-    // Update counter to avoid conflicts with existing mock data
-    setIdCounter(3)
+    const prepopulatedData = generatePrepopulatedData()
+    setHealthData(prepopulatedData)
   }, [])
 
   const handleCellClick = (rowIndex: number, columnKey: string, currentValue: any) => {
